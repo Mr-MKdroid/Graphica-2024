@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What HAPPENED</title>
+    <style>
+        h1{
+            display: flex;
+            justify-content: center;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: antiquewhite;
+        }
+        #search-container {
+            margin-bottom: 20px;
+        }
+        #search-input {
+            width: 70%;
+            padding: 10px;
+            font-size: 16px;
+        }
+        #search-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #results-container {
+            border-top: 1px solid #ccc;
+            padding-top: 20px;
+        }
+        .result-item {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
+        .highlight {
+            background-color: yellow;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>What Happened</h1>
+    <div id="search-container">
+        <input type="text" id="search-input" placeholder="Enter keywords...">
+        <button id="search-button">Search</button>
+    </div>
+    <div id="results-container"></div>
+
+    <script>
+        // Sample dataset of solutions with keywords
+        const solutions = [
+            { 
+                problem: "How to deal with theft", 
+                solution: "Section 378: Defines theft. It states that theft occurs when a person dishonestly takes any movable property out of the possession of another person. Section 379: Punishment for theft, which can result in imprisonment of up to three years, a fine, or both.",
+                keywords: ["theft", "robber", "burglary", "criminal", "criminal law"]
+            },
+            { 
+                problem: "How do I deal with dowry, domestic violence, sexual harassment.", 
+                solution: "Article 14: Right to equality, prohibiting discrimination on the basis of sex. Article 15: Prohibits discrimination against women and allows for special provisions for women and children. Article 21: Right to life and personal liberty, which includes the right to live with dignity. Article 39(a): Right to adequate means of livelihood, emphasizing the economic rights of women. Article 42: Provision for just and humane conditions of work and maternity relief.",
+                keywords: ["rape", "sexual harassment", "dowry", "domestic violence", "death", "injury"]
+            },
+            { 
+                problem: "How to deal with human trafficking", 
+                solution: "Article 21: Right to life and personal liberty, which includes protection from trafficking and exploitation. Article 23: Prohibits trafficking in human beings and forced labor, stating that trafficking is a punishable offense. Article 39(e): Directs the state to ensure that no citizen is forced by economic necessity to enter professions unsuited to their age or strength. Article 39(f): Ensures that children are not exploited and that childhood and youth are protected against exploitation and against activities that are detrimental to their health.",
+                keywords: ["human trafficking", "child trafficking"]
+            },
+            { 
+                problem: "How to deal with cyber crime", 
+                solution: "Article 21: Right to life and personal liberty, which includes the right to privacy and protection from cybercrimes that infringe on personal safety. Article 19(1)(a): Right to freedom of speech and expression, relevant in the context of online expression and regulation of hate speech and misinformation.",
+                keywords: ["cyber", "cyber crime", "cybersecurity"]
+            },
+        ];
+
+        const searchInput = document.getElementById('search-input');
+        const searchButton = document.getElementById('search-button');
+        const resultsContainer = document.getElementById('results-container');
+
+        // List of common determiners and modal verbs to ignore
+        const wordsToIgnore = [
+            "a", "an", "the", "this", "that", "these", "those", "to", "with", "is", "was", "are", "were", "be", "being", "been", "have", "has", "had", "do", "does", "did", "will", "would", "shall", "should", "can", "could", "may", "might", "must"
+        ];
+
+        searchButton.addEventListener('click', performSearch);
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        function performSearch() {
+            const query = searchInput.value.toLowerCase().trim();
+            const keywords = query.split(/\s+/).filter(word => !wordsToIgnore.includes(word));
+
+            const results = solutions.filter(item => 
+                keywords.some(keyword => 
+                    item.keywords.some(k => k.toLowerCase().includes(keyword)) ||
+                    item.solution.toLowerCase().includes(keyword)
+                )
+            );
+
+            displayResults(results, keywords);
+        }
+
+        function displayResults(results, keywords) {
+            resultsContainer.innerHTML = '';
+            if (results.length === 0) {
+                resultsContainer.innerHTML = '<p>No solutions found. Try different keywords.</p>';
+                return;
+            }
+
+            results.forEach(item => {
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item';
+                
+                let highlightedSolution = item.solution;
+                
+                keywords.forEach(keyword => {
+                    const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
+                    highlightedSolution = highlightedSolution.replace(regex, match => `<span class="highlight">${match}</span>`);
+                });
+                
+                resultItem.innerHTML = `<p>${highlightedSolution}</p>`;
+                resultsContainer.appendChild(resultItem);
+            });
+        }
+    </script>
+</body>
+</html>
